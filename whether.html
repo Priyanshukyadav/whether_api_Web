@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .weather-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 320px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0277bd;
+    }
+
+    #weatherResult {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-container">
+    <h1>Weather App</h1>
+    <input type="text" id="locationInput" placeholder="Enter location" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById('locationInput').value.trim();
+      const apiKey = '9d0e06d20e59491d9f422140252108';
+
+      if (!location) {
+        document.getElementById('weatherResult').innerText = 'Please enter a location.';
+        return;
+      }
+
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Location not found");
+
+        const data = await response.json();
+        const temperature = data.current.temp_c;
+        const condition = data.current.condition.text;
+        const icon = data.current.condition.icon;
+        const feelsLike = data.current.feelslike_c;
+
+        document.getElementById('weatherResult').innerHTML = `
+          <strong>${data.location.name}, ${data.location.country}</strong><br>
+          <img src="https:${icon}" alt="${condition}"><br>
+          <strong>${condition}</strong><br>
+          Temperature: ${temperature}°C<br>
+          Feels like: ${feelsLike}°C
+        `;
+      } catch (error) {
+        document.getElementById('weatherResult').innerText = 'Error: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
